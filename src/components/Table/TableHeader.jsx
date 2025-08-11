@@ -18,17 +18,13 @@ export const TableHeader = ({ onFilter, onSort, filters }) => {
   };
 
   const handleFilterChange = (field, value) => {
-    const newFilters = { ...filters };
-
     if (value === '') {
-      delete newFilters[field];
+      onFilter({});
     } else if (field === 'country' || field === 'city') {
-      newFilters[`address.${field}`] = value;
+      onFilter({ [`address.${field}`]: value });
     } else {
-      newFilters[field] = value;
+      onFilter({ [field]: value });
     }
-
-    onFilter(newFilters);
   };
 
   const getSortIcon = (key) => {
