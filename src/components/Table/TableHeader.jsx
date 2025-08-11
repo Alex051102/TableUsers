@@ -1,22 +1,4 @@
-import { useState } from 'react';
-
-export const TableHeader = ({ onFilter, onSort, filters }) => {
-  const [sortConfig, setSortConfig] = useState({
-    key: null,
-    direction: 'none',
-  });
-
-  const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key) {
-      direction = sortConfig.direction === 'asc' ? 'desc' : 'none';
-    }
-
-    const newSortConfig = { key, direction };
-    setSortConfig(newSortConfig);
-    onSort(newSortConfig);
-  };
-
+export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
   const handleFilterChange = (field, value) => {
     if (value === '') {
       onFilter({});
@@ -27,14 +9,25 @@ export const TableHeader = ({ onFilter, onSort, filters }) => {
     }
   };
 
-  const getSortIcon = (key) => {
-    if (sortConfig.key !== key) return '↕';
-    return sortConfig.direction === 'asc' ? '↑' : '↓';
+  const handleSortChange = (field, value) => {
+    if (value === 'none') {
+      onSort(field, 'none');
+    } else if (value === 'asc') {
+      onSort(field, 'asc');
+    } else if (value === 'desc') {
+      onSort(field, 'desc');
+    }
+  };
+
+  // Вспомогательная функция для определения активного значения
+  const getSortValue = (field) => {
+    return sortConfig.key === field ? sortConfig.direction : 'none';
   };
 
   return (
     <thead>
       <tr>
+        {/* Фамилия */}
         <th>
           <div className="header-cell">
             <input
@@ -44,12 +37,18 @@ export const TableHeader = ({ onFilter, onSort, filters }) => {
               onChange={(e) => handleFilterChange('lastName', e.target.value)}
               className="filter-input"
             />
-            <button onClick={() => handleSort('lastName')} className="sort-button">
-              {getSortIcon('lastName')}
-            </button>
+            <select
+              value={getSortValue('lastName')}
+              onChange={(e) => handleSortChange('lastName', e.target.value)}
+              className="sort-select">
+              <option value="none">Без сортировки</option>
+              <option value="asc">По возрастанию</option>
+              <option value="desc">По убыванию</option>
+            </select>
           </div>
         </th>
 
+        {/* Имя */}
         <th>
           <div className="header-cell">
             <input
@@ -59,12 +58,18 @@ export const TableHeader = ({ onFilter, onSort, filters }) => {
               onChange={(e) => handleFilterChange('firstName', e.target.value)}
               className="filter-input"
             />
-            <button onClick={() => handleSort('firstName')} className="sort-button">
-              {getSortIcon('firstName')}
-            </button>
+            <select
+              value={getSortValue('firstName')}
+              onChange={(e) => handleSortChange('firstName', e.target.value)}
+              className="sort-select">
+              <option value="none">Без сортировки</option>
+              <option value="asc">По возрастанию</option>
+              <option value="desc">По убыванию</option>
+            </select>
           </div>
         </th>
 
+        {/* Возраст */}
         <th>
           <div className="header-cell">
             <input
@@ -74,12 +79,18 @@ export const TableHeader = ({ onFilter, onSort, filters }) => {
               onChange={(e) => handleFilterChange('age', e.target.value)}
               className="filter-input"
             />
-            <button onClick={() => handleSort('age')} className="sort-button">
-              {getSortIcon('age')}
-            </button>
+            <select
+              value={getSortValue('age')}
+              onChange={(e) => handleSortChange('age', e.target.value)}
+              className="sort-select">
+              <option value="none">Без сортировки</option>
+              <option value="asc">По возрастанию</option>
+              <option value="desc">По убыванию</option>
+            </select>
           </div>
         </th>
 
+        {/* Пол */}
         <th>
           <div className="header-cell">
             <select
@@ -90,12 +101,18 @@ export const TableHeader = ({ onFilter, onSort, filters }) => {
               <option value="male">Мужской</option>
               <option value="female">Женский</option>
             </select>
-            <button onClick={() => handleSort('gender')} className="sort-button">
-              {getSortIcon('gender')}
-            </button>
+            <select
+              value={getSortValue('gender')}
+              onChange={(e) => handleSortChange('gender', e.target.value)}
+              className="sort-select">
+              <option value="none">Без сортировки</option>
+              <option value="asc">По возрастанию</option>
+              <option value="desc">По убыванию</option>
+            </select>
           </div>
         </th>
 
+        {/* Телефон */}
         <th>
           <div className="header-cell">
             <input
@@ -105,12 +122,18 @@ export const TableHeader = ({ onFilter, onSort, filters }) => {
               onChange={(e) => handleFilterChange('phone', e.target.value)}
               className="filter-input"
             />
-            <button onClick={() => handleSort('phone')} className="sort-button">
-              {getSortIcon('phone')}
-            </button>
+            <select
+              value={getSortValue('phone')}
+              onChange={(e) => handleSortChange('phone', e.target.value)}
+              className="sort-select">
+              <option value="none">Без сортировки</option>
+              <option value="asc">По возрастанию</option>
+              <option value="desc">По убыванию</option>
+            </select>
           </div>
         </th>
 
+        {/* Email */}
         <th>
           <input
             type="text"
@@ -121,6 +144,7 @@ export const TableHeader = ({ onFilter, onSort, filters }) => {
           />
         </th>
 
+        {/* Страна */}
         <th>
           <input
             type="text"
@@ -131,6 +155,7 @@ export const TableHeader = ({ onFilter, onSort, filters }) => {
           />
         </th>
 
+        {/* Город */}
         <th>
           <input
             type="text"

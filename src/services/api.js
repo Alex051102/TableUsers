@@ -1,4 +1,4 @@
-const API_URL = 'https://dummyjson.com/users';
+const API_URL = 'https://dummyjson.com/users'; // Убраны пробелы
 
 export const fetchUsers = async ({
   filters = {},
@@ -8,41 +8,42 @@ export const fetchUsers = async ({
   perPage = 10,
 }) => {
   try {
-    let url = API_URL;
     const params = new URLSearchParams();
 
-    // 1. Фильтрация (только первый активный фильтр)
-    const [filterKey, filterValue] = Object.entries(filters).find(([, v]) => v) || [];
-    if (filterKey) {
-      const apiKey =
-        filterKey === 'city' || filterKey === 'country' ? `address.${filterKey}` : filterKey;
-      url += `/filter?key=${apiKey}&value=${filterValue}`;
-    }
-
-    // 2. Пагинация
+    // Пагинация
     params.append('limit', perPage);
     params.append('skip', (page - 1) * perPage);
 
-    // 3. Сортировка
+    // Сортировка
     if (sortBy && order !== 'none') {
       params.append('sortBy', sortBy);
       params.append('order', order);
     }
 
-    // Формируем итоговый URL
-    const finalUrl = url.includes('filter')
-      ? `${url}&${params.toString()}`
-      : `${url}?${params.toString()}`;
+    let url = API_URL;
 
+    // Фильтрация
+    const [filterKey, filterValue] = Object.entries(filters).find(([, v]) => v) || [];
+    if (filterKey && filterValue) {
+      const field =
+        filterKey === 'city' || filterKey === 'country' ? `address.${filterKey}` : filterKey;
+
+      // Формируем URL с фильтром и добавляем параметры через &
+      url = `${url}/filter?key=${field}&value=${encodeURIComponent(filterValue)}`;
+    }
+
+    // Объединяем URL и параметры
+    const separator = url.includes('?') ? '&' : '?';
+    const finalUrl = params.toString() ? `${url}${separator}${params.toString()}` : url;
+    console.log(finalUrl);
     const response = await fetch(finalUrl);
     if (!response.ok) throw new Error('Ошибка загрузки данных');
 
     const data = await response.json();
+
     return {
-      users: data.users || data,
-      total: data.total || 100, // dummyjson не возвращает total при фильтрации
-      page,
-      perPage,
+      users: data.users || [],
+      total: data.total || data.users?.length || 100,
     };
   } catch (error) {
     console.error('API Error:', error);

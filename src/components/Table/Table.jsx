@@ -13,16 +13,16 @@ export const Table = () => {
     pagination: { page: 1, perPage: 10, total: 0 },
   });
 
-  const loadUsers = async () => {
+  const loadUsers = async ({ filters, sortBy, order, page, perPage }) => {
     try {
       setState((prev) => ({ ...prev, loading: true, error: null }));
 
       const { users, total } = await fetchUsers({
-        filters: state.filters,
-        sortBy: state.sortConfig.key,
-        order: state.sortConfig.direction,
-        page: state.pagination.page,
-        perPage: state.pagination.perPage,
+        filters,
+        sortBy,
+        order,
+        page,
+        perPage,
       });
 
       setState((prev) => ({
@@ -38,33 +38,41 @@ export const Table = () => {
   };
 
   useEffect(() => {
-    const timer = setTimeout(loadUsers, 300);
-    return () => clearTimeout(timer);
-  }, [state.filters, state.sortConfig, state.pagination.page]);
+    const timer = setTimeout(() => {
+      loadUsers({
+        filters: state.filters,
+        sortBy: state.sortConfig.key,
+        order: state.sortConfig.direction,
+        page: state.pagination.page,
+        perPage: state.pagination.perPage,
+      });
+    }, 300);
 
+    return () => clearTimeout(timer);
+  }, [
+    state.filters,
+    state.sortConfig.key,
+    state.sortConfig.direction,
+    state.pagination.page,
+    state.pagination.perPage,
+  ]);
   const handleFilterChange = (newFilters) => {
-    // Сбрасываем предыдущий фильтр и устанавливаем новый
     const activeFilter = Object.entries(newFilters).find(([, v]) => v) || [];
     const updatedFilters = activeFilter[0] ? { [activeFilter[0]]: activeFilter[1] } : {};
 
     setState((prev) => ({
       ...prev,
       filters: updatedFilters,
-      pagination: { ...prev.pagination, page: 1 }, // Сброс страницы при фильтрации
+      pagination: { ...prev.pagination, page: 1 },
     }));
   };
 
-  const handleSort = (key) => {
-    setState((prev) => {
-      const direction =
-        prev.sortConfig.key !== key ? 'asc' : prev.sortConfig.direction === 'asc' ? 'desc' : 'none';
-
-      return {
-        ...prev,
-        sortConfig: { key, direction },
-        pagination: { ...prev.pagination, page: 1 }, // Сброс страницы при сортировке
-      };
-    });
+  const handleSort = (key, direction) => {
+    setState((prev) => ({
+      ...prev,
+      sortConfig: { key, direction },
+      pagination: { ...prev.pagination, page: 1 },
+    }));
   };
 
   const handlePageChange = (page) => {
@@ -76,16 +84,16 @@ export const Table = () => {
 
   return (
     <div className="table-container">
-      <table className="user-table">
+      <table className="table">
         <TableHeader
           filters={state.filters}
           onFilter={handleFilterChange}
           onSort={handleSort}
           sortConfig={state.sortConfig}
         />
-        <tbody>
+        <tbody className="table-info">
           {state.users.map((user) => (
-            <tr key={user.id}>
+            <tr className="table-info-column" key={user.id}>
               <td>{user.lastName}</td>
               <td>{user.firstName}</td>
               <td>{user.age}</td>

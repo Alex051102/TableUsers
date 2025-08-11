@@ -1,0 +1,18 @@
+.table-container{
+    width: 100%;
+    max-width: 1400px;
+}
+.table-info{
+    width: 100%;
+}
+.table {
+  width: 100%;
+  table-layout: fixed; /* <-- ключевое свойство */
+  border-collapse: collapse;
+}
+.table-info-column td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 8px;
+}
