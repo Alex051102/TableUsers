@@ -19,7 +19,6 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
     }
   };
 
-  // Вспомогательная функция для определения активного значения
   const getSortValue = (field) => {
     return sortConfig.key === field ? sortConfig.direction : 'none';
   };
@@ -27,7 +26,6 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
   return (
     <thead>
       <tr>
-        {/* Фамилия */}
         <th>
           <div className="header-cell">
             <input
@@ -48,7 +46,6 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
           </div>
         </th>
 
-        {/* Имя */}
         <th>
           <div className="header-cell">
             <input
@@ -69,7 +66,6 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
           </div>
         </th>
 
-        {/* Возраст */}
         <th>
           <div className="header-cell">
             <input
@@ -90,7 +86,6 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
           </div>
         </th>
 
-        {/* Пол */}
         <th>
           <div className="header-cell">
             <select
@@ -112,7 +107,6 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
           </div>
         </th>
 
-        {/* Телефон */}
         <th>
           <div className="header-cell">
             <input
@@ -133,7 +127,6 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
           </div>
         </th>
 
-        {/* Email */}
         <th>
           <input
             type="text"
@@ -144,7 +137,6 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
           />
         </th>
 
-        {/* Страна */}
         <th>
           <input
             type="text"
@@ -155,7 +147,6 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
           />
         </th>
 
-        {/* Город */}
         <th>
           <input
             type="text"

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { fetchUsers } from '../../services/api';
 import { TableHeader } from './TableHeader';
 import { Pagination } from './Pagination';
-
+import './Table.css';
 export const Table = () => {
   const [state, setState] = useState({
     users: [],

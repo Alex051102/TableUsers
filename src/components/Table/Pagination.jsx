@@ -1,7 +1,7 @@
 export const Pagination = ({ currentPage, totalItems, itemsPerPage, onPageChange }) => {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  if (totalPages <= 1) return null;
+  if (totalPages == 0) return null;
 
   return (
     <div className="pagination">

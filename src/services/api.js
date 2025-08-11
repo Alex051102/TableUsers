@@ -1,4 +1,4 @@
-const API_URL = 'https://dummyjson.com/users'; // Убраны пробелы
+const API_URL = 'https://dummyjson.com/users';
 
 export const fetchUsers = async ({
   filters = {},
@@ -10,11 +10,9 @@ export const fetchUsers = async ({
   try {
     const params = new URLSearchParams();
 
-    // Пагинация
     params.append('limit', perPage);
     params.append('skip', (page - 1) * perPage);
 
-    // Сортировка
     if (sortBy && order !== 'none') {
       params.append('sortBy', sortBy);
       params.append('order', order);
@@ -22,17 +20,14 @@ export const fetchUsers = async ({
 
     let url = API_URL;
 
-    // Фильтрация
     const [filterKey, filterValue] = Object.entries(filters).find(([, v]) => v) || [];
     if (filterKey && filterValue) {
       const field =
         filterKey === 'city' || filterKey === 'country' ? `address.${filterKey}` : filterKey;
 
-      // Формируем URL с фильтром и добавляем параметры через &
       url = `${url}/filter?key=${field}&value=${encodeURIComponent(filterValue)}`;
     }
 
-    // Объединяем URL и параметры
     const separator = url.includes('?') ? '&' : '?';
     const finalUrl = params.toString() ? `${url}${separator}${params.toString()}` : url;
     console.log(finalUrl);
@@ -43,7 +38,7 @@ export const fetchUsers = async ({
 
     return {
       users: data.users || [],
-      total: data.total || data.users?.length || 100,
+      total: data.total || data.users?.length,
     };
   } catch (error) {
     console.error('API Error:', error);
