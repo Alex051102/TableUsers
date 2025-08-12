@@ -45,3 +45,24 @@ export const fetchUsers = async ({
     throw error;
   }
 };
+
+export const fetchUserById = async (id) => {
+  try {
+    const response = await fetch(`${API_URL}/${id}`);
+    console.log(`${API_URL}/${id}`);
+    if (!response.ok) {
+      throw new Error(`Ошибка: ${response.status}`);
+    }
+
+    const userData = await response.json();
+
+    if (!userData || userData.message) {
+      throw new Error('Пользователь не найден');
+    }
+
+    return userData;
+  } catch (error) {
+    console.error('Ошибка при получении пользователя:', error);
+    throw error;
+  }
+};

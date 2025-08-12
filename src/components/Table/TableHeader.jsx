@@ -24,10 +24,11 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
   };
 
   return (
-    <thead>
-      <tr>
-        <th>
-          <div className="header-cell">
+    <div className="header">
+      <div className="header__main">
+        <div className="header-cell">
+          <p>Фамилия</p>
+          <div className="header-choice">
             <input
               type="text"
               placeholder="Фамилия"
@@ -39,15 +40,21 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
               value={getSortValue('lastName')}
               onChange={(e) => handleSortChange('lastName', e.target.value)}
               className="sort-select">
-              <option value="none">Без сортировки</option>
-              <option value="asc">По возрастанию</option>
-              <option value="desc">По убыванию</option>
+              <option className="sort-select__option" value="none">
+                ↕
+              </option>
+              <option className="sort-select__option" value="asc">
+                ↑
+              </option>
+              <option className="sort-select__option" value="desc">
+                ↓
+              </option>
             </select>
           </div>
-        </th>
-
-        <th>
-          <div className="header-cell">
+        </div>
+        <div className="header-cell">
+          <p>Имя</p>
+          <div className="header-choice">
             <input
               type="text"
               placeholder="Имя"
@@ -59,15 +66,21 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
               value={getSortValue('firstName')}
               onChange={(e) => handleSortChange('firstName', e.target.value)}
               className="sort-select">
-              <option value="none">Без сортировки</option>
-              <option value="asc">По возрастанию</option>
-              <option value="desc">По убыванию</option>
+              <option className="sort-select__option" value="none">
+                ↕
+              </option>
+              <option className="sort-select__option" value="asc">
+                ↑
+              </option>
+              <option className="sort-select__option" value="desc">
+                ↓
+              </option>
             </select>
           </div>
-        </th>
-
-        <th>
-          <div className="header-cell">
+        </div>
+        <div className="header-cell">
+          <p>Возраст</p>
+          <div className="header-choice">
             <input
               type="number"
               placeholder="Возраст"
@@ -79,19 +92,25 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
               value={getSortValue('age')}
               onChange={(e) => handleSortChange('age', e.target.value)}
               className="sort-select">
-              <option value="none">Без сортировки</option>
-              <option value="asc">По возрастанию</option>
-              <option value="desc">По убыванию</option>
+              <option className="sort-select__option" value="none">
+                ↕
+              </option>
+              <option className="sort-select__option" value="asc">
+                ↑
+              </option>
+              <option className="sort-select__option" value="desc">
+                ↓
+              </option>
             </select>
           </div>
-        </th>
-
-        <th>
-          <div className="header-cell">
+        </div>
+        <div className="header-cell">
+          <p>Пол</p>
+          <div className="header-choice">
             <select
               value={filters.gender || ''}
               onChange={(e) => handleFilterChange('gender', e.target.value)}
-              className="filter-select">
+              className="filter-select filter-select--gender">
               <option value="">Все</option>
               <option value="male">Мужской</option>
               <option value="female">Женский</option>
@@ -100,15 +119,21 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
               value={getSortValue('gender')}
               onChange={(e) => handleSortChange('gender', e.target.value)}
               className="sort-select">
-              <option value="none">Без сортировки</option>
-              <option value="asc">По возрастанию</option>
-              <option value="desc">По убыванию</option>
+              <option className="sort-select__option" value="none">
+                ↕
+              </option>
+              <option className="sort-select__option" value="asc">
+                ↑
+              </option>
+              <option className="sort-select__option" value="desc">
+                ↓
+              </option>
             </select>
           </div>
-        </th>
-
-        <th>
-          <div className="header-cell">
+        </div>
+        <div className="header-cell">
+          <p>Телефон</p>
+          <div className="header-choice">
             <input
               type="text"
               placeholder="Телефон"
@@ -120,14 +145,20 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
               value={getSortValue('phone')}
               onChange={(e) => handleSortChange('phone', e.target.value)}
               className="sort-select">
-              <option value="none">Без сортировки</option>
-              <option value="asc">По возрастанию</option>
-              <option value="desc">По убыванию</option>
+              <option className="sort-select__option" value="none">
+                ↕
+              </option>
+              <option className="sort-select__option" value="asc">
+                ↑
+              </option>
+              <option className="sort-select__option" value="desc">
+                ↓
+              </option>
             </select>
           </div>
-        </th>
-
-        <th>
+        </div>
+        <div className="header-cell">
+          <p>Email</p>
           <input
             type="text"
             placeholder="Email"
@@ -135,9 +166,9 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
             onChange={(e) => handleFilterChange('email', e.target.value)}
             className="filter-input"
           />
-        </th>
-
-        <th>
+        </div>
+        <div className="header-cell">
+          <p>Страна</p>
           <input
             type="text"
             placeholder="Страна"
@@ -145,9 +176,9 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
             onChange={(e) => handleFilterChange('country', e.target.value)}
             className="filter-input"
           />
-        </th>
-
-        <th>
+        </div>
+        <div className="header-cell">
+          <p>Город</p>
           <input
             type="text"
             placeholder="Город"
@@ -155,8 +186,8 @@ export const TableHeader = ({ onFilter, onSort, filters, sortConfig }) => {
             onChange={(e) => handleFilterChange('city', e.target.value)}
             className="filter-input"
           />
-        </th>
-      </tr>
-    </thead>
+        </div>
+      </div>
+    </div>
   );
 };
