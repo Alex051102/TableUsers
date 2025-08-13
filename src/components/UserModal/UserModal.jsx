@@ -1,3 +1,4 @@
+import './UserModal.css';
 export const UserModal = ({ user, onClose }) => {
   if (!user) return null;
 
@@ -46,22 +47,6 @@ export const UserModal = ({ user, onClose }) => {
               </p>
               <p>
                 <strong>Индекс:</strong> {user.address?.postalCode}
-              </p>
-            </div>
-
-            <div className="user-section">
-              <h3>Дополнительно</h3>
-              <p>
-                <strong>Дата рождения:</strong> {user.birthDate}
-              </p>
-              <p>
-                <strong>Университет:</strong> {user.university}
-              </p>
-              <p>
-                <strong>Компания:</strong> {user.company?.name}
-              </p>
-              <p>
-                <strong>Должность:</strong> {user.company?.title}
               </p>
             </div>
           </div>

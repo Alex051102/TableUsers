@@ -1,10 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchUsers, fetchUserById } from '../../services/api';
-import { TableHeader } from './TableHeader';
-import { Pagination } from './Pagination';
+import { Filter } from '../Filter/Filter';
+import { Pagination } from '../Pagination/Pagination';
 import './Table.css';
 
 export const Table = ({ setToModal }) => {
+  const tableRef = useRef(null);
+  const [tableWidth, setTableWidth] = useState(0);
+  const MIN_COLUMN_WIDTH = 50;
+
   const [state, setState] = useState({
     users: [],
     loading: false,
@@ -25,7 +29,34 @@ export const Table = ({ setToModal }) => {
     city: 120,
   });
 
-  const headerRefs = useRef({});
+  useEffect(() => {
+    const updateWidth = () => {
+      if (tableRef.current) {
+        setTableWidth(tableRef.current.offsetWidth);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
+  const calculateTotalWidth = useCallback((widths) => {
+    return Object.values(widths).reduce((sum, width) => sum + width, 0);
+  }, []);
+
+  useEffect(() => {
+    const totalWidth = calculateTotalWidth(columnWidths);
+    if (totalWidth > tableWidth && tableWidth > 0) {
+      const scaleFactor = tableWidth / totalWidth;
+      const newWidths = Object.entries(columnWidths).reduce((acc, [key, width]) => {
+        acc[key] = Math.max(MIN_COLUMN_WIDTH, Math.floor(width * scaleFactor));
+        return acc;
+      }, {});
+
+      setColumnWidths(newWidths);
+    }
+  }, [tableWidth, columnWidths, calculateTotalWidth]);
 
   const loadUsers = async ({ filters, sortBy, order, page, perPage }) => {
     try {
@@ -54,7 +85,6 @@ export const Table = ({ setToModal }) => {
   const showInfo = async (id) => {
     try {
       const user = await fetchUserById(id);
-      console.log('Данные пользователя:', user);
       setToModal(user);
     } catch (error) {
       console.error('Не удалось получить пользователя:', error.message);
@@ -70,7 +100,7 @@ export const Table = ({ setToModal }) => {
         page: state.pagination.page,
         perPage: state.pagination.perPage,
       });
-    }, 300);
+    }, 0);
 
     return () => clearTimeout(timer);
   }, [
@@ -104,33 +134,50 @@ export const Table = ({ setToModal }) => {
     setState((prev) => ({ ...prev, pagination: { ...prev.pagination, page } }));
   };
 
-  // Обработчик изменения ширины колонки
-  const handleResize = (columnName, width) => {
-    setColumnWidths((prev) => ({
-      ...prev,
-      [columnName]: Math.max(50, width), // Минимальная ширина 50px
-    }));
-  };
+  const startResize = useCallback(
+    (columnName, e) => {
+      e.preventDefault();
+      const startX = e.clientX;
+      const startWidth = columnWidths[columnName];
+      const totalWidth = calculateTotalWidth(columnWidths);
 
-  // Функция для начала перетаскивания
-  const startResize = (columnName, e) => {
-    e.preventDefault();
-    const startX = e.clientX;
-    const startWidth = columnWidths[columnName];
+      const doResize = (e) => {
+        const newWidth = startWidth + (e.clientX - startX);
 
-    const doResize = (e) => {
-      const newWidth = startWidth + e.clientX - startX;
-      handleResize(columnName, newWidth);
-    };
+        if (newWidth < MIN_COLUMN_WIDTH) return;
 
-    const stopResize = () => {
-      document.removeEventListener('mousemove', doResize);
-      document.removeEventListener('mouseup', stopResize);
-    };
+        const newTotalWidth = totalWidth - startWidth + newWidth;
 
-    document.addEventListener('mousemove', doResize);
-    document.addEventListener('mouseup', stopResize);
-  };
+        if (newTotalWidth <= tableWidth) {
+          setColumnWidths((prev) => ({
+            ...prev,
+            [columnName]: newWidth,
+          }));
+        } else {
+          const scaleFactor = tableWidth / newTotalWidth;
+          const newWidths = Object.entries(columnWidths).reduce((acc, [key, width]) => {
+            if (key === columnName) {
+              acc[key] = newWidth;
+            } else {
+              acc[key] = Math.max(MIN_COLUMN_WIDTH, Math.floor(width * scaleFactor));
+            }
+            return acc;
+          }, {});
+
+          setColumnWidths(newWidths);
+        }
+      };
+
+      const stopResize = () => {
+        document.removeEventListener('mousemove', doResize);
+        document.removeEventListener('mouseup', stopResize);
+      };
+
+      document.addEventListener('mousemove', doResize);
+      document.addEventListener('mouseup', stopResize);
+    },
+    [columnWidths, tableWidth, calculateTotalWidth],
+  );
 
   if (state.loading) return <div className="loading">Загрузка...</div>;
   if (state.error) return <div className="error">Ошибка: {state.error}</div>;
@@ -138,71 +185,51 @@ export const Table = ({ setToModal }) => {
   return (
     <div className="table-main">
       <div className="table-container">
-        <TableHeader
+        <Filter
           filters={state.filters}
           onFilter={handleFilterChange}
           onSort={handleSort}
           sortConfig={state.sortConfig}
         />
-        <table className="table">
+        <table ref={tableRef} className="table" style={{ width: '100%' }}>
           <tbody className="table-info">
             <tr className="table-info-titles">
-              <td
-                style={{ width: `${columnWidths.lastName}px` }}
-                ref={(el) => (headerRefs.current.lastName = el)}>
+              <td style={{ width: `${columnWidths.lastName}px` }} data-column="lastName">
                 Фамилия
                 <span className="resize-handle" onMouseDown={(e) => startResize('lastName', e)} />
               </td>
-              <td
-                style={{ width: `${columnWidths.firstName}px` }}
-                ref={(el) => (headerRefs.current.firstName = el)}>
+              <td style={{ width: `${columnWidths.firstName}px` }} data-column="firstName">
                 Имя
                 <span className="resize-handle" onMouseDown={(e) => startResize('firstName', e)} />
               </td>
-              <td
-                style={{ width: `${columnWidths.age}px` }}
-                ref={(el) => (headerRefs.current.age = el)}>
+              <td style={{ width: `${columnWidths.age}px` }} data-column="age">
                 Возраст
                 <span className="resize-handle" onMouseDown={(e) => startResize('age', e)} />
               </td>
-              <td
-                style={{ width: `${columnWidths.gender}px` }}
-                ref={(el) => (headerRefs.current.gender = el)}>
+              <td style={{ width: `${columnWidths.gender}px` }} data-column="gender">
                 Пол
                 <span className="resize-handle" onMouseDown={(e) => startResize('gender', e)} />
               </td>
-              <td
-                style={{ width: `${columnWidths.phone}px` }}
-                ref={(el) => (headerRefs.current.phone = el)}>
+              <td style={{ width: `${columnWidths.phone}px` }} data-column="phone">
                 Телефон
                 <span className="resize-handle" onMouseDown={(e) => startResize('phone', e)} />
               </td>
-              <td
-                style={{ width: `${columnWidths.email}px` }}
-                ref={(el) => (headerRefs.current.email = el)}>
+              <td style={{ width: `${columnWidths.email}px` }} data-column="email">
                 Email
                 <span className="resize-handle" onMouseDown={(e) => startResize('email', e)} />
               </td>
-              <td
-                style={{ width: `${columnWidths.country}px` }}
-                ref={(el) => (headerRefs.current.country = el)}>
+              <td style={{ width: `${columnWidths.country}px` }} data-column="country">
                 Страна
                 <span className="resize-handle" onMouseDown={(e) => startResize('country', e)} />
               </td>
-              <td
-                style={{ width: `${columnWidths.city}px` }}
-                ref={(el) => (headerRefs.current.city = el)}>
+              <td style={{ width: `${columnWidths.city}px` }} data-column="city">
                 Город
                 <span className="resize-handle" onMouseDown={(e) => startResize('city', e)} />
               </td>
             </tr>
             {state.users.map((user) => (
               <tr onClick={() => showInfo(user.id)} className="table-info-column" key={user.id}>
-                <td
-                  className="table-info-column-text"
-                  style={{ width: `${columnWidths.lastName}px` }}>
-                  {user.lastName}
-                </td>
+                <td style={{ width: `${columnWidths.lastName}px` }}>{user.lastName}</td>
                 <td style={{ width: `${columnWidths.firstName}px` }}>{user.firstName}</td>
                 <td style={{ width: `${columnWidths.age}px` }}>{user.age}</td>
                 <td style={{ width: `${columnWidths.gender}px` }}>{user.gender}</td>
