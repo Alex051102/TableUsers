@@ -1,4 +1,4 @@
-const API_URL = 'https://dmyjson.com/users';
+const API_URL = 'https://dummyjson.com/users';
 
 export const fetchUsers = async ({
   filters = {},
