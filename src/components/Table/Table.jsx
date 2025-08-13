@@ -3,6 +3,8 @@ import { fetchUsers, fetchUserById } from '../../services/api';
 import { Filter } from '../Filter/Filter';
 import { Pagination } from '../Pagination/Pagination';
 import './Table.css';
+import Loading from '../Loading/Loading';
+import ErrorMess from '../ErrorMess/ErrorMess';
 
 export const Table = ({ setToModal }) => {
   const tableRef = useRef(null);
@@ -179,8 +181,8 @@ export const Table = ({ setToModal }) => {
     [columnWidths, tableWidth, calculateTotalWidth],
   );
 
-  if (state.loading) return <div className="loading">Загрузка...</div>;
-  if (state.error) return <div className="error">Ошибка: {state.error}</div>;
+  if (state.loading) return <Loading></Loading>;
+  if (state.error) return <ErrorMess message={state.error}></ErrorMess>;
 
   return (
     <div className="table-main">

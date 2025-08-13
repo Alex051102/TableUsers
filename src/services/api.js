@@ -1,4 +1,4 @@
-const API_URL = 'https://dummyjson.com/users';
+const API_URL = 'https://dmyjson.com/users';
 
 export const fetchUsers = async ({
   filters = {},
@@ -30,7 +30,7 @@ export const fetchUsers = async ({
 
     const separator = url.includes('?') ? '&' : '?';
     const finalUrl = params.toString() ? `${url}${separator}${params.toString()}` : url;
-    console.log(finalUrl);
+
     const response = await fetch(finalUrl);
     if (!response.ok) throw new Error('Ошибка загрузки данных');
 
